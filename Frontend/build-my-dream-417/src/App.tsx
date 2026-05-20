@@ -25,11 +25,11 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/users" element={<UserManagement />} />
+            {/* <Route path="/users" element={<UserManagement />} /> */}
             <Route path="/customers" element={<CustomerEnrollment />} />
-            <Route path="/calls" element={<CallManagement />} />
-            <Route path="/verification" element={<VerificationScoring />} />
-            <Route path="/scoring" element={<VerificationScoring />} />
+            {/* <Route path="/calls" element={<CallManagement />} /> */}
+            {/* <Route path="/verification" element={<VerificationScoring />} /> */}
+            {/* <Route path="/scoring" element={<VerificationScoring />} /> */}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -18,17 +18,17 @@ const CustomerEnrollment = () => {
           <h1 className="text-2xl font-bold text-foreground">Customer Enrollment</h1>
           <p className="text-sm text-muted-foreground">Register or manage customer voice biometric profiles for secure authentication.</p>
         </div>
-        <span className="vsm-badge-medium-risk flex items-center gap-1.5">
+        {/* <span className="vsm-badge-medium-risk flex items-center gap-1.5">
           <AlertTriangle className="w-3 h-3" /> Missing Consent
-        </span>
+        </span> */}
       </div>
 
-      {/* Search */}
+      {/* Search
       <div className="vsm-card p-4 flex items-center gap-3 mb-6">
         <Search className="w-5 h-5 text-muted-foreground" />
         <Input placeholder="Search existing customer by phone, name, or policy number" className="border-0 shadow-none flex-1" />
         <Button className="px-6">Search</Button>
-      </div>
+      </div> */}
 
       {/* Tabs */}
       <div className="flex gap-0 mb-6">
