@@ -1,0 +1,63 @@
+# OS
+.DS_Store
+
+# Logs
+*.log
+.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.tox/
+.nox/
+.coverage*
+htmlcov/
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+__pypackages__/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.lockb
+
+# Vite / frontend
+dist/
+coverage/
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Mac
+.DS_Store
+
+# Project-specific
+temp_recordings/
+*.wav
+pretrained_models/
