@@ -1,0 +1,1 @@
+from app.service.embedding_service import EmbeddingService
