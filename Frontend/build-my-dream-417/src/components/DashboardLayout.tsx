@@ -5,11 +5,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/users", icon: Users, label: "Users" },
+  // { to: "/users", icon: Users, label: "Users" },
   { to: "/customers", icon: UserCheck, label: "Customers" },
-  { to: "/calls", icon: Phone, label: "Calls" },
-  { to: "/verification", icon: Shield, label: "Verification" },
-  { to: "/scoring", icon: BarChart3, label: "Scoring" },
+  // { to: "/calls", icon: Phone, label: "Calls" },
+  // { to: "/verification", icon: Shield, label: "Verification" },
+  // { to: "/scoring", icon: BarChart3, label: "Scoring" },
 ];
 
 const DashboardLayout = () => {
@@ -48,12 +48,12 @@ const DashboardLayout = () => {
           ))}
         </nav>
 
-        <div className="p-3 mt-auto">
+        {/* <div className="p-3 mt-auto">
           <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
             <Users className="w-4 h-4" />
             + Create New User
           </button>
-        </div>
+        </div> */}
       </aside>
 
       {/* Main */}
@@ -61,8 +61,8 @@ const DashboardLayout = () => {
         {/* Top bar */}
         <header className="sticky top-0 z-10 bg-card border-b border-border px-6 py-3 flex items-center justify-between">
           <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Global search..." className="pl-9 h-9 bg-muted/50" />
+            {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" /> */}
+            {/* <Input placeholder="Global search..." className="pl-9 h-9 bg-muted/50" /> */}
           </div>
           <div className="flex items-center gap-3">
             <button className="p-2 rounded-lg hover:bg-accent text-muted-foreground">
