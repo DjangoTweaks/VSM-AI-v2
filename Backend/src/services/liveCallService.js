@@ -1,6 +1,8 @@
 const supabase = require('../config/supabase')
 const { AppError } = require('../utils/errors')
 
+const scoreCache = new Map()
+
 const genCallId = () => {
   const num = Math.floor(1000 + Math.random() * 9000)
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
@@ -25,13 +27,13 @@ const register = async ({ phone_number, qdrant_id, confidence_score }) => {
       is_live: true,
       status: 'Active',
       start_time: new Date().toISOString(),
-      qdrant_id: qdrant_id || null,
-      confidence_score: confidence_score ?? null,
     })
     .select()
     .single()
 
   if (error) throw new AppError(error.message || 'Failed to register call')
+
+  scoreCache.set(callId, confidence_score ?? null)
 
   return {
     call_id: callId,
@@ -52,7 +54,11 @@ const getLive = async () => {
     .order('start_time', { ascending: false })
 
   if (error) throw new AppError('Failed to fetch live calls')
-  return data
+
+  return data.map((call) => ({
+    ...call,
+    confidence_score: scoreCache.get(call.call_id) ?? null,
+  }))
 }
 
 module.exports = { register, getLive }

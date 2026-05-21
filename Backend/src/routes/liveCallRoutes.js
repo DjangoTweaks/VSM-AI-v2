@@ -9,7 +9,7 @@ router.post('/',
   [
     body('phone_number').notEmpty().withMessage('phone_number is required'),
     body('qdrant_id').notEmpty().withMessage('qdrant_id is required'),
-    body('confidence_score').isFloat({ min: 0, max: 100 }).withMessage('confidence_score must be 0–100'),
+    body('confidence_score').optional().isFloat({ min: 0, max: 100 }).withMessage('confidence_score must be 0–100'),
   ],
   validate,
   register
