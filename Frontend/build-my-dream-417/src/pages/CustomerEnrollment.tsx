@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Upload, Mic, CheckCircle, User, FileAudio } from "lucide-react";
+import { Upload, Mic, CheckCircle, User, FileAudio, Loader2 } from "lucide-react";
+import { api } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -49,6 +50,57 @@ const CustomerEnrollment = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [enrolledCustomer, setEnrolledCustomer] = useState<{ name: string; id: string; qdrantId?: string } | null>(null);
+
+  const handleCompleteEnrollment = async () => {
+    if (!uploadedFile) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const customer = await api.post<{ id: string }>('/customers', {
+        firstName: personalInfo.firstName,
+        lastName: personalInfo.lastName,
+        phone: personalInfo.phone,
+        email: personalInfo.email,
+        ...(personalInfo.dob && { dateOfBirth: personalInfo.dob }),
+      });
+      const policy = await api.post<{ id: string }>('/policies', {
+        policyNumber: policyDetails.policyNumber,
+        customerId: customer.id,
+        planType: policyDetails.planType,
+        ...(policyDetails.agentName && { agentName: policyDetails.agentName }),
+        enrollmentDate: policyDetails.enrollmentDate,
+      });
+      const form = new FormData();
+      form.append('file', uploadedFile);
+      form.append('customerId', customer.id);
+      form.append('policyId', policy.id);
+      form.append('consentGiven', 'true');
+      const voiceResult = await api.postForm<{ qdrant_id?: string }>('/voice-embeddings/insert', form);
+      setEnrolledCustomer({
+        name: `${personalInfo.firstName} ${personalInfo.lastName}`,
+        id: customer.id,
+        qdrantId: voiceResult?.qdrant_id,
+      });
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Enrollment failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    setPersonalInfo({ firstName: '', lastName: '', phone: '', email: '', dob: '' });
+    setPolicyDetails({ policyNumber: '', planType: '', agentName: '', enrollmentDate: new Date().toISOString().split('T')[0] });
+    setUploadedFile(null);
+    setCompletedTabs(new Set());
+    setActiveTab('Personal Info');
+    setEnrolledCustomer(null);
+    setSubmitError(null);
+  };
+
   const markComplete = (tab: string) =>
     setCompletedTabs((prev) => new Set(prev).add(tab));
 
@@ -78,6 +130,42 @@ const CustomerEnrollment = () => {
   const customerName = personalInfoDone
     ? `${personalInfo.firstName} ${personalInfo.lastName}`.trim() || "—"
     : "—";
+
+  if (enrolledCustomer) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Customer Enrollment</h1>
+            <p className="text-sm text-muted-foreground">
+              Register or manage customer voice biometric profiles for secure authentication.
+            </p>
+          </div>
+        </div>
+        <div className="vsm-card p-10 text-center max-w-md mx-auto mt-10">
+          <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-success" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">Enrollment Complete!</h2>
+          <p className="text-muted-foreground mb-1">
+            <span className="font-semibold text-foreground">{enrolledCustomer.name}</span> has been successfully enrolled.
+          </p>
+          <p className="text-xs text-muted-foreground mb-4">Voice biometric profile saved to database.</p>
+
+          {enrolledCustomer.qdrantId && (
+            <div className="bg-muted/60 rounded-lg px-4 py-3 mb-6 text-left">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                Qdrant Embedding ID
+              </p>
+              <p className="font-mono text-sm text-foreground break-all">{enrolledCustomer.qdrantId}</p>
+            </div>
+          )}
+
+          <Button onClick={handleReset} className="w-full">Enroll Another Customer</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -309,17 +397,23 @@ const CustomerEnrollment = () => {
                   )}
                 </div>
 
+                {submitError && (
+                  <p className="text-sm text-destructive mt-4 text-center">{submitError}</p>
+                )}
+
                 <div className="flex justify-between mt-8">
-                  <Button variant="outline" onClick={() => setActiveTab("Policy Details")}>
+                  <Button variant="outline" onClick={() => setActiveTab("Policy Details")} disabled={isSubmitting}>
                     ← Back
                   </Button>
                   <Button
-                    disabled={!uploadedFile}
-                    onClick={() => {
-                      // TODO: POST to /voice-embeddings/insert with uploadedFile + customer metadata
-                    }}
+                    disabled={!uploadedFile || isSubmitting}
+                    onClick={handleCompleteEnrollment}
                   >
-                    Complete Enrollment →
+                    {isSubmitting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enrolling…</>
+                    ) : (
+                      "Complete Enrollment →"
+                    )}
                   </Button>
                 </div>
               </div>
